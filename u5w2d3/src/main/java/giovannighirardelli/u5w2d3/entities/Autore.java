@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class Autore {
     @Id
     @GeneratedValue
+    @Setter(AccessLevel.NONE)
     private int id;
     private String nome;
     private String cognome;

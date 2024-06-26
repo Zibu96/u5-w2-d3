@@ -1,7 +1,11 @@
 package giovannighirardelli.u5w2d3.repositories;
 
-import org.springframework.stereotype.Repository;
+import giovannighirardelli.u5w2d3.entities.Autore;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class AutoreRepository {
+import java.util.Optional;
+
+public interface AutoreRepository extends JpaRepository<Autore, Integer> {
+
+    boolean existsByNomeAndCognome(String nome, String cognome);
 }

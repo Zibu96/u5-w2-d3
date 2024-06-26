@@ -1,9 +1,14 @@
 package giovannighirardelli.u5w2d3.servicies;
 
 import giovannighirardelli.u5w2d3.entities.Autore;
+import giovannighirardelli.u5w2d3.exceptions.BadRequestException;
 import giovannighirardelli.u5w2d3.exceptions.NotFoundException;
 import giovannighirardelli.u5w2d3.repositories.AutoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,56 +22,43 @@ public class AutoreService {
     @Autowired
     private AutoreRepository autoreRepository;
 
-    private List<Autore> autoreList = new ArrayList<>();
 
-    public List<Autore> getAutoreList() {
-        return this.autoreList;
+
+    public Page<Autore> getAutore(int pageNumber, int pageSize, String sortBy){
+        if (pageSize > 20) pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        return autoreRepository.findAll(pageable);
     }
 
     public Autore saveAutore(Autore body) {
-        Random rndm = new Random();
-        body.setId(rndm.nextInt(1, 5000));
+        if (this.autoreRepository.existsByNomeAndCognome(body.getNome(), body.getCognome())) throw new BadRequestException("L'autore " + body.getNome() + " esiste già");
         body.setAvatar("https://ui-avatars.com/api/?name=" + body.getNome() + "+" + body.getCognome());
-        this.autoreList.add(body);
-        return body;
+
+        return this.autoreRepository.save(body);
 
     }
 
 
     public Autore findById(int id) {
-        Autore found = null;
-        for (Autore autore : this.autoreList) {
-            if (autore.getId() == id) found = autore;
-        }
-        if (found == null) throw new NotFoundException(id);
-        else return found;
+       return this.autoreRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
     public Autore findByIdAndUpdate(int id, Autore updatedAutore) {
-        Autore found = null;
-        for (Autore autore : this.autoreList) {
-            if (autore.getId() == id) { found = autore;
-                found.setNome(updatedAutore.getNome());
-                found.setCognome(updatedAutore.getCognome());
-                found.setEmail(updatedAutore.getEmail());
-                found.setDataNascita(updatedAutore.getDataNascita());
-                found.setAvatar("https://ui-avatars.com/api/?name=" + updatedAutore.getNome() + "+" + updatedAutore.getCognome());
-            }
-        }
-        if (found == null) throw new NotFoundException(id);
-        else return found;
+        Autore found = this.findById(id);
+
+        found.setNome(updatedAutore.getNome());
+        found.setCognome(updatedAutore.getCognome());
+        found.setEmail(updatedAutore.getEmail());
+        found.setDataNascita(updatedAutore.getDataNascita());
+        found.setAvatar("https://ui-avatars.com/api/?name=" + updatedAutore.getNome() + "+" + updatedAutore.getCognome());
+
+        return this.autoreRepository.save(updatedAutore);
+
     }
 
     public void findByIdAndDelete(int id) {
-        Iterator<Autore> iterator = this.autoreList.iterator();
-
-        while (iterator.hasNext()) {
-            Autore current = iterator.next();
-            if (current.getId() == id) {
-                iterator.remove();
-            }
-        }
-
+       Autore found = this.findById(id);
+       this.autoreRepository.delete(found);
 
     }
 }

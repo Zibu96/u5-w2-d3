@@ -14,6 +14,7 @@ import lombok.*;
 public class BlogPost {
     @Id
     @GeneratedValue
+    @Setter(AccessLevel.NONE)
     private int id;
     private String categoria;
     private String cover;
