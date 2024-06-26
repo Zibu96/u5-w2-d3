@@ -1,5 +1,6 @@
 package giovannighirardelli.u5w2d3.servicies;
 
+import giovannighirardelli.u5w2d3.entities.Autore;
 import giovannighirardelli.u5w2d3.entities.BlogPost;
 import giovannighirardelli.u5w2d3.exceptions.NotFoundException;
 import giovannighirardelli.u5w2d3.payloads.BlogPostPayload;
@@ -19,6 +20,8 @@ public class BlogPostService {
 
     @Autowired
     private BlogPostRepository blogPostRepository;
+    @Autowired
+    private AutoreService autoreService;
 
 
     public Page<BlogPost> getBlogPosts(int pageNumber, int pageSize, String sortBy){
@@ -27,10 +30,12 @@ public class BlogPostService {
         return blogPostRepository.findAll(pageable);
     }
 
-    public BlogPost saveBlogPost(BlogPost body){
+    public BlogPost saveBlogPost(BlogPostPayload body){
+        Autore autore = autoreService.findById(body.getAutoreId());
 
+        BlogPost blogPost = new BlogPost(body.getCategoria(), "cover", body.getContenuto(), body.getTempoLettura(), autore);
 
-        return body;
+        return this.blogPostRepository.save(blogPost);
     }
 
     public BlogPost findById(int id){

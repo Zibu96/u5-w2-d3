@@ -8,7 +8,6 @@ import lombok.*;
 @Table(name = "blogpost")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class BlogPost {
@@ -25,4 +24,11 @@ public class BlogPost {
     @JoinColumn(name = "autore")
     private Autore autore;
 
+    public BlogPost(String categoria, String cover, String contenuto, int tempoLettura, Autore autore) {
+        this.categoria = categoria;
+        this.cover = cover;
+        this.contenuto = contenuto;
+        this.tempoLettura = tempoLettura;
+        this.autore = autore;
+    }
 }

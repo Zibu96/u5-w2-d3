@@ -10,8 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BlogPostPayload {
     private String categoria;
-    private String cover;
     private String contenuto;
+    private int tempoLettura;
     private int autoreId;
 
 }
